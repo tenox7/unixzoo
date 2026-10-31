@@ -1,0 +1,24 @@
+# checks pull requests: tests, and a build of the site that fails on anything
+# in content/ the site would leave out, nothing is uploaded
+name: check
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - run: go vet ./...
+      - run: go test ./...
+      - name: build the site
+        run: go run . -strict -bucket ""

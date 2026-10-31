@@ -1,0 +1,8 @@
+/unixzoo
+/unixzoo.exe
+/unixzoo-*
+/site/
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini

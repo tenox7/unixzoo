@@ -1,0 +1,40 @@
+# builds the site and uploads it to the www.unixzoo.com bucket on every push
+# to master, eg: a merged pull request
+name: publish
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: dry run, only show what would be uploaded or deleted
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write # for the keyless Google login
+
+concurrency: publish # one at a time
+
+jobs:
+  publish:
+    if: github.repository == 'tenox7/unixzoo' # not in forks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+      - run: go test ./...
+      - name: Google login
+        uses: google-github-actions/auth@v3
+        with:
+          # keyless, nothing secret here: pool github, provider unixzoo in
+          # project tenox7 lets in only this repo's master branch, role
+          # unixzooPublisher can only list, upload and delete in the bucket
+          workload_identity_provider: projects/329174559034/locations/global/workloadIdentityPools/github/providers/unixzoo
+      - name: build and upload
+        run: go run . -n=${{ inputs.dry_run == true }}

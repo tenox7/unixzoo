@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UNIX ZOO</title>
+<style type="text/css">
+body, th, td { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 12px; }
+h1 { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 24px; color: #FF6000; }
+a:link, a:visited { text-decoration: none; }
+a:hover { text-decoration: underline; }
+</style>
+{{- /*
+  The gallery look. Old browsers never see it and show the table with its
+  html attributes instead: Netscape 4 skips style with media="all", the
+  others do not know @supports or fail the test.
+*/}}
+<style type="text/css" media="all">
+@supports (display: contents) and (aspect-ratio: 1) {
+body { margin: 0; background: #f0f1f3; color: #1d1d1f; }
+body, th, td { font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+a:link, a:visited { color: #1a56db; }
+.top { background: #18191b; color: #b8bbbf; padding: 28px 20px; }
+.top > * { max-width: 1200px; margin-left: auto; margin-right: auto; }
+.top h1 { margin-top: 0; margin-bottom: 6px; color: #ff7a1a; font-family: inherit; font-size: 30px; letter-spacing: .04em; }
+.top p { margin-top: 0; margin-bottom: 0; }
+.top a:link, .top a:visited { color: #ffa45c; }
+table.gallery, table.gallery tbody { display: block; }
+table.gallery { width: auto; max-width: 1200px; margin: 28px auto; padding: 0 20px; }
+table.gallery tbody { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(210px, 45%), 1fr)); gap: 20px; }
+table.gallery tr { display: contents; }
+td.card { display: flex; flex-direction: column; width: auto; padding: 0; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 4px 14px rgba(0,0,0,.06); transition: transform .15s, box-shadow .15s; }
+td.card:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,.08), 0 12px 28px rgba(0,0,0,.12); }
+.shot, .noshot { position: relative; display: block; overflow: hidden; aspect-ratio: 4 / 3; background: #111 var(--big, none) center / contain no-repeat; }
+.shot img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; }
+.noshot::before { content: attr(title) "\A\A login: _"; display: block; padding: 14px 16px; white-space: pre-wrap; color: #ffb000; font: 13px/1.4 ui-monospace, Menlo, Consolas, "Courier New", monospace; }
+.name { padding: 12px 14px 8px; font-size: 15px; }
+td.card ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0 14px 14px; list-style: none; }
+td.card li a { display: block; padding: 3px 10px; border-radius: 999px; background: #edf1f7; font-size: 12.5px; }
+td.card li a:hover { background: #1a56db; color: #fff; text-decoration: none; }
+.bottom { max-width: 1200px; margin: 0 auto 40px; padding: 0 20px; color: #444; }
+.bottom ul { columns: 3 240px; }
+}
+</style>
+</head>
+<body bgcolor="#E6E6E6" text="#222222" link="#0033CC" vlink="#551A8B">
+<div class="top">
+<h1>UNIX ZOO</h1>
+{{.Header}}
+</div>
+<table class="gallery" width="100%" border="0" cellspacing="12" cellpadding="8">
+{{- range .Rows}}
+<tr valign="top">
+{{- range .}}
+<td class="card" width="{{$.Width}}%" bgcolor="#FFFFFF">
+{{- if .Thumb}}
+<a class="shot" href="{{.Full}}" style="--big: url({{.Big}})"><img src="{{.Thumb}}" width="{{.W}}" height="{{.H}}" alt="{{.Title}}" border="0"></a>
+{{- else}}
+<div class="noshot" title="{{.Title}}"></div>
+{{- end}}
+<div class="name"><b>{{.Title}}</b></div>
+{{- if .Links}}
+<ul type="square">
+{{- range .Links}}
+<li><a href="{{.URL}}">{{.Name}}</a>
+{{- end}}
+</ul>
+{{- end}}
+</td>
+{{- end}}
+</tr>
+{{- end}}
+</table>
+{{- if .Footer}}
+<div class="bottom">
+{{.Footer}}
+</div>
+{{- end}}
+</body>
+</html>
