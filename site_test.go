@@ -80,7 +80,7 @@ func TestBuild(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got, want := slices.Sorted(maps.Keys(site)), []string{"img/at-t-3b1-7300-unix.png", "img/at-t-3b1-7300-unix_m.jpg", "img/at-t-3b1-7300-unix_t.jpg", "index.html"}; !slices.Equal(got, want) {
+	if got, want := slices.Sorted(maps.Keys(site)), []string{"404.html", "img/at-t-3b1-7300-unix.png", "img/at-t-3b1-7300-unix_m.jpg", "img/at-t-3b1-7300-unix_t.jpg", "index.html"}; !slices.Equal(got, want) {
 		t.Errorf("site files %q, want %q", got, want)
 	}
 	h := string(site["index.html"])
@@ -113,7 +113,7 @@ func TestBuild(t *testing.T) {
 	again, _ := build(cards, "<p>top", "<p>bottom", 2, 160)
 	for k, v := range site {
 		if !bytes.Equal(v, again[k]) {
-			t.Errorf("%v differs between runs, every cron run would upload it", k)
+			t.Errorf("%v differs between runs", k)
 		}
 	}
 }

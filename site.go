@@ -23,6 +23,11 @@ var indexTmpl string
 
 var page = template.Must(template.New("index").Parse(indexTmpl))
 
+// notFound is the page GitHub Pages shows for a missing file
+//
+//go:embed 404.html
+var notFound []byte
+
 // bigThumb is the thumbnail size for modern browsers, their cards are about
 // 220 css pixels wide so this stays sharp on hidpi screens
 const bigThumb = 400
@@ -36,7 +41,7 @@ type tile struct {
 }
 
 // build renders the page and the screenshots, the site is a map of
-// bucket object names to their contents
+// file names to their contents
 func build(cards []card, header, footer template.HTML, cols, size int) (map[string][]byte, error) {
 	site := map[string][]byte{}
 	used := map[string]bool{}
@@ -61,7 +66,22 @@ func build(cards []card, header, footer template.HTML, cols, size int) (map[stri
 		Width          int
 	}{header, footer, rows, 100 / cols})
 	site["index.html"] = ascii(b.Bytes())
+	site["404.html"] = notFound
 	return site, err
+}
+
+// save writes the site to a folder
+func save(dir string, site map[string][]byte) error {
+	for n, b := range site {
+		p := filepath.Join(dir, filepath.FromSlash(n))
+		if err := os.MkdirAll(filepath.Dir(p), 0755); err != nil {
+			return err
+		}
+		if err := os.WriteFile(p, b, 0644); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // addShot puts a screenshot and its thumbnails on the site, a small one

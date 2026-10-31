@@ -1,20 +1,16 @@
-# builds the site and uploads it to the www.unixzoo.com bucket on every push
-# to master, eg: a merged pull request
+# builds the site and puts it on GitHub Pages on every push to master, eg: a
+# merged pull request
 name: publish
 
 on:
   push:
     branches: [master]
   workflow_dispatch:
-    inputs:
-      dry_run:
-        description: dry run, only show what would be uploaded or deleted
-        type: boolean
-        default: false
 
 permissions:
   contents: read
-  id-token: write # for the keyless Google login
+  pages: write    # to publish the site
+  id-token: write # deploy-pages logs in to Pages with it, keyless
 
 concurrency: publish # one at a time
 
@@ -23,19 +19,19 @@ jobs:
     if: github.repository == 'tenox7/unixzoo' # not in forks
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
       - run: go test ./...
-      - name: Google login
-        uses: google-github-actions/auth@v3
+      - name: build the site
+        run: go run . -out site
+      - uses: actions/upload-pages-artifact@v5
         with:
-          # keyless, nothing secret here: pool github, provider unixzoo in
-          # project tenox7 lets in only this repo's master branch, role
-          # unixzooPublisher can only list, upload and delete in the bucket
-          workload_identity_provider: projects/329174559034/locations/global/workloadIdentityPools/github/providers/unixzoo
-          project_id: tenox7 # not needed for the bucket, stops a warning
-      - name: build and upload
-        run: go run . -n=${{ inputs.dry_run == true }}
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v5
