@@ -3,21 +3,17 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
 	"path/filepath"
-	"time"
 )
 
 var (
 	contentDir = flag.String("content", "content", "content folder, one subfolder per card")
-	outDir     = flag.String("out", "", "also save a copy of the site to this folder, eg: site")
-	bucketName = flag.String("bucket", "www.unixzoo.com", "GCS bucket to publish to, empty to skip")
-	dryRun     = flag.Bool("n", false, "dry run, show what would be uploaded or deleted, change nothing")
+	outDir     = flag.String("out", "site", "folder to build the site into, empty to only check the content")
 	strict     = flag.Bool("strict", false, "fail if anything in the content folder is left out of the site, for pull request checks")
-	preview    = flag.Bool("preview", false, "show the site in the browser from a local web server instead of uploading, reload the page to see edits")
+	preview    = flag.Bool("preview", false, "show the site in the browser from a local web server, reload the page to see edits")
 	listenAddr = flag.String("addr", "localhost:8080", "web server address for -preview, eg: :8080 to let other computers see it")
 	numCols    = flag.Int("cols", 5, "cards per row in old browsers, modern browsers fit the window")
 	thumbSize  = flag.Int("thumb", 160, "max thumbnail width and height in pixels for old browsers")
@@ -60,19 +56,11 @@ func main() {
 	if *strict && problems > 0 {
 		log.Fatalf("-strict: fix the %v problem(s) above", problems)
 	}
-	if *outDir != "" {
-		if err := save(*outDir, site); err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("saved %v", filepath.Join(*outDir, "index.html"))
-	}
-	if *bucketName == "" {
+	if *outDir == "" {
 		return
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
-	err = publish(ctx, *bucketName, site, *dryRun)
-	cancel()
-	if err != nil {
+	if err := save(*outDir, site); err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("saved %v", filepath.Join(*outDir, "index.html"))
 }

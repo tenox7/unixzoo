@@ -3,15 +3,15 @@
 Ready to run Unix virtual machines: http://www.unixzoo.com
 
 This repo is the web site. Each folder in [content](content) is one card.
-When a pull request is merged, GitHub builds the site and uploads it.
+When a pull request is merged, GitHub builds the site and publishes it.
 
 - **To add or fix a card, see [CONTRIBUTING.md](CONTRIBUTING.md).**
 - Wanted cards and the submission queue: [TODO.md](TODO.md).
 
 ## The site
 
-`unixzoo` is a Go program. It builds the site from the content folder and
-uploads it to the Google Cloud Storage bucket `www.unixzoo.com`.
+`unixzoo` is a Go program. It builds the site from the content folder into
+the `site` folder. GitHub Pages serves it.
 
 The page is HTML 4.01 Transitional, no JavaScript, plain ASCII.
 
@@ -52,57 +52,41 @@ Edit it with wfm, Finder, Explorer or any file manager.
 GitHub Actions publishes on every push to master, eg: a merged pull request.
 It takes about a minute.
 
-- [publish](.github/workflows/publish.yml): tests, builds and uploads.
+- [publish](.github/workflows/publish.yml): tests, builds and puts the site on
+  GitHub Pages.
   - Run it by hand: Actions, publish, Run workflow.
-  - Tick "dry run" to only see what would be uploaded or deleted.
 - [check](.github/workflows/check.yml): runs on every pull request. Tests, and
-  builds with `-strict`. Uploads nothing.
+  builds with `-strict`. Publishes nothing.
 
-### Bucket login
+### Hosting
 
-No key or password is stored anywhere. It uses Google Workload Identity
-Federation:
+GitHub Pages, with Source set to "GitHub Actions" in Settings, Pages. No key
+or password is stored anywhere.
 
-1. Each publish run gets a signed token from GitHub that says which repo,
-   branch and event it is.
-2. Google checks it, and gives back a login that works for one hour.
-
-- Google lets in only this repo, only the master branch, only pushes and manual
-  runs. It checks the repo by its id, so a new repo with the same name does
-  not get in.
-- The login can only list, upload, replace and delete files in the
-  `www.unixzoo.com` bucket. It can not change the bucket's settings or touch
-  anything else.
-- In project `tenox7`: pool `github`, provider `unixzoo`, role
-  `unixzooPublisher`. The provider name in publish.yml is not a secret.
+- Only master can deploy. The `github-pages` environment allows no other
+  branch.
+- DNS is at Namecheap. `www` is a CNAME to `tenox7.github.io`. The bare
+  `unixzoo.com` has GitHub's A and AAAA records, and GitHub sends it on to www.
+- "Enforce HTTPS" is off on purpose. Old browsers can only do http, so http
+  must never redirect to https. Modern browsers try https by themselves.
+- `404.html` is the page for a missing file.
 
 ## Run it yourself
 
 ```
 go build
-./unixzoo -preview          # opens http://localhost:8080 in your browser, uploads nothing
-./unixzoo -n                # show what would be uploaded or deleted, uploads nothing
-./unixzoo                   # build and upload
+./unixzoo -preview          # opens http://localhost:8080 in your browser
+./unixzoo                   # builds the site into the site folder
 ```
 
 - Preview: leave it running, edit the content folder, reload the page in the
   browser to see the edit. Ctrl+C stops it.
 - To see the preview from other computers, like old machines with old
   browsers, use `-preview -addr :8080`.
-- Upload: normally GitHub does it, see Publish. An upload from your computer
-  puts your local folder on the site, even what is not pushed yet. The next
-  GitHub run puts master back.
-- Only changed files are uploaded.
-- The tool owns `index.html` and `img/` in the bucket. It deletes images no card
-  uses. Everything else in the bucket, like `404.html`, is left alone.
-- It refuses to publish when there are no cards, for example when the content
+- Only GitHub publishes the site, from master. See Publish.
+- It refuses to build when there are no cards, for example when the content
   folder is on a share that is not mounted.
 - All flags: `./unixzoo -h`
-
-## Login
-
-Only needed to upload from your own computer. Uses Google Application Default
-Credentials: run `gcloud auth application-default login` once.
 
 ## Test
 

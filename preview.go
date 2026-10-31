@@ -11,6 +11,14 @@ import (
 	"sync"
 )
 
+var mimeTypes = map[string]string{
+	".html": "text/html; charset=utf-8",
+	".jpg":  "image/jpeg",
+	".jpeg": "image/jpeg",
+	".png":  "image/png",
+	".gif":  "image/gif",
+}
+
 // previewHandler serves the site from memory, every load of the page
 // rebuilds it so edits in the content folder show up on reload
 func previewHandler() (http.Handler, error) {

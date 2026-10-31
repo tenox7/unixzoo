@@ -1,5 +1,5 @@
 # checks pull requests: tests, and a build of the site that fails on anything
-# in content/ the site would leave out, nothing is uploaded
+# in content/ the site would leave out, nothing is published
 name: check
 
 on:
@@ -21,4 +21,4 @@ jobs:
       - run: go vet ./...
       - run: go test ./...
       - name: build the site
-        run: go run . -strict -bucket ""
+        run: go run . -strict -out ""
