@@ -36,5 +36,6 @@ jobs:
           # project tenox7 lets in only this repo's master branch, role
           # unixzooPublisher can only list, upload and delete in the bucket
           workload_identity_provider: projects/329174559034/locations/global/workloadIdentityPools/github/providers/unixzoo
+          project_id: tenox7 # not needed for the bucket, stops a warning
       - name: build and upload
         run: go run . -n=${{ inputs.dry_run == true }}
