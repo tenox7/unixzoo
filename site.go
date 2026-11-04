@@ -28,6 +28,13 @@ var page = template.Must(template.New("index").Parse(indexTmpl))
 //go:embed 404.html
 var notFound []byte
 
+// favicon is the site icon shown in browser tabs and bookmarks, a "UZ"
+// monogram on a dark tile, orange U and terminal-green Z. Multi-size .ico
+// (16, 32, 48) so even old browsers that only fetch /favicon.ico get it.
+//
+//go:embed favicon.ico
+var favicon []byte
+
 // bigThumb is the thumbnail size for modern browsers, their cards are about
 // 220 css pixels wide so this stays sharp on hidpi screens
 const bigThumb = 400
@@ -67,6 +74,7 @@ func build(cards []card, header, footer template.HTML, cols, size int) (map[stri
 	}{header, footer, rows, 100 / cols})
 	site["index.html"] = ascii(b.Bytes())
 	site["404.html"] = notFound
+	site["favicon.ico"] = favicon
 	return site, err
 }
 

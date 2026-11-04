@@ -80,12 +80,13 @@ func TestBuild(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got, want := slices.Sorted(maps.Keys(site)), []string{"404.html", "img/at-t-3b1-7300-unix.png", "img/at-t-3b1-7300-unix_m.jpg", "img/at-t-3b1-7300-unix_t.jpg", "index.html"}; !slices.Equal(got, want) {
+	if got, want := slices.Sorted(maps.Keys(site)), []string{"404.html", "favicon.ico", "img/at-t-3b1-7300-unix.png", "img/at-t-3b1-7300-unix_m.jpg", "img/at-t-3b1-7300-unix_t.jpg", "index.html"}; !slices.Equal(got, want) {
 		t.Errorf("site files %q, want %q", got, want)
 	}
 	h := string(site["index.html"])
 	for _, s := range []string{
 		`<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"`,
+		`<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">`,
 		"<p>top", "<p>bottom",
 		"<b>AT&amp;T 3b1 / 7300 Unix</b>",
 		`<a class="shot" href="img/at-t-3b1-7300-unix.png" style="--big: url(img/at-t-3b1-7300-unix_m.jpg)"><img src="img/at-t-3b1-7300-unix_t.jpg" width="160" height="120" alt="AT&amp;T 3b1 / 7300 Unix" border="0"></a>`,

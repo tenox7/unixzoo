@@ -36,6 +36,7 @@ func TestPreview(t *testing.T) {
 		{"/img/coherent-3-0_t.jpg", 200, "image/jpeg"},
 		{"/img/coherent-3-0_m.jpg", 200, "image/jpeg"},
 		{"/img/coherent-3-0.png", 200, "image/png"},
+		{"/favicon.ico", 200, "image/x-icon"},
 		{"/nope.html", 404, ""},
 		{"/../content.go", 404, ""}, // served from memory, never from disk
 	}

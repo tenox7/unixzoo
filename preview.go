@@ -17,6 +17,7 @@ var mimeTypes = map[string]string{
 	".jpeg": "image/jpeg",
 	".png":  "image/png",
 	".gif":  "image/gif",
+	".ico":  "image/x-icon",
 }
 
 // previewHandler serves the site from memory, every load of the page
